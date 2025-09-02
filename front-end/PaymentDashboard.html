@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Payment Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body class="payment-dashboard">
+  <section class="form-section">
+    <div class="login-header">
+      <img src="KPH.jpg" alt="Logo">
+      <h2>Payment Dashboard</h2>
+    </div>
+
+    <!-- Navigation Button inside the box -->
+    <div class="nav-btn-container">
+      <a href="PaymentEntry.html" class="btn-nav">New Payment Entry</a>
+    </div>
+
+    <!-- New Controls: Clear + Search -->
+    <div class="dashboard-controls">
+      <button id="clearSelected" class="btn-cancel">Clear Selected</button>
+      <input type="text" id="searchInput" placeholder="Search by Name..." />
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrapper">
+      <table id="paymentTable">
+        <thead>
+          <tr>
+            <th><input type="checkbox" id="selectAll"></th>
+            <th>#</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Amount</th>
+            <th>Method</th>
+            <th>Type</th>
+            <th>Date of Payment</th>
+            <th>Next Installment Date</th>
+            <th>Reminder</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+  </section>
+
+  <script>
+    // Load data from localStorage
+    function loadPayments() {
+      let entries = JSON.parse(localStorage.getItem("payments")) || [];
+      let tbody = document.querySelector("#paymentTable tbody");
+      tbody.innerHTML = "";
+
+      entries.forEach((entry, index) => {
+        let row = `
+          <tr>
+            <td><input type="checkbox" class="rowCheck" data-index="${index}"></td>
+            <td>${index + 1}</td>
+            <td>${entry.name}</td>
+            <td>${entry.email}</td>
+            <td>${entry.amount}</td>
+            <td>${entry.method}</td>
+            <td>${entry.type}</td>
+            <td>${entry.date}</td>
+            <td>${entry.nextDate || "-"}</td>
+            <td>${entry.reminder ? "Yes" : "No"}</td>
+          </tr>
+        `;
+        tbody.innerHTML += row;
+      });
+    }
+
+    // Search by name
+    document.getElementById("searchInput").addEventListener("input", function () {
+      let filter = this.value.toLowerCase();
+      let rows = document.querySelectorAll("#paymentTable tbody tr");
+      rows.forEach(row => {
+        let name = row.cells[2].textContent.toLowerCase();
+        row.style.display = name.includes(filter) ? "" : "none";
+      });
+    });
+
+    // Select all checkbox
+    document.getElementById("selectAll").addEventListener("change", function () {
+      let checked = this.checked;
+      document.querySelectorAll(".rowCheck").forEach(cb => cb.checked = checked);
+    });
+
+    // Clear selected rows
+    document.getElementById("clearSelected").addEventListener("click", function () {
+      let entries = JSON.parse(localStorage.getItem("payments")) || [];
+      let checkboxes = document.querySelectorAll(".rowCheck:checked");
+
+      let indexesToRemove = Array.from(checkboxes).map(cb => parseInt(cb.dataset.index));
+      entries = entries.filter((_, index) => !indexesToRemove.includes(index));
+
+      localStorage.setItem("payments", JSON.stringify(entries));
+      loadPayments();
+    });
+
+    // Load when page opens
+    window.onload = loadPayments;
+  </script>
+</body>
+</html>
