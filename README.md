@@ -1,4 +1,5 @@
-# Payment_Portal
-Simple Payment Entry & Dashboard
+# Payment Entry System
 
-This project is a Payment Portal web application built using HTML, CSS, and JavaScript.
+A simple payment entry system with **frontend (HTML, CSS, JS)** and **backend (Node.js, Express)**.  
+It lets users select a payment method and shows a QR code popup for completing payments.
+
